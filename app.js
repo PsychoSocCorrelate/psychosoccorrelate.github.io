@@ -17,6 +17,11 @@
     return r.json();
   };
   const fmtInt = (v) => (v === null || v === undefined ? "NA" : Number(v).toLocaleString("en-US"));
+  // How the site's content may be reused, and where the code and result tables are.
+  const reuse = (e) => [
+    e.license ? `Content on this site is licensed under <a rel="license" href="${esc(e.license.url)}">${esc(e.license.name)}</a>.` : "",
+    e.code_url ? `Code and result tables: <a href="${esc(e.code_url)}">${esc(e.code_url.replace(/^https:\/\//, ""))}</a>.` : "",
+  ].filter(Boolean).join(" ");
   const ordinal = (n) => `${n}${["th", "st", "nd", "rd"][(n % 100 - 20) % 10] || ["th", "st", "nd", "rd"][n % 100] || "th"}`;
 
   const S = { evidence: null, results: null, variables: [], outcomes: [], tables: {} };
@@ -471,6 +476,7 @@
           <section id="glossary"><h2>Definitions</h2><dl class="glossary">${e.glossary.map((g) => `<dt id="term-${esc(g.id)}">${esc(g.term)}</dt><dd>${esc(g.definition)}</dd>`).join("")}</dl></section>
           <section id="privacy" class="rich"><h2>Data and privacy</h2><p>${esc(A.privacy)} <a href="${esc(A.data_url)}">MIDUS data documentation</a>.</p></section>
           <section id="cite"><h2>Citation</h2><p class="cite">${esc(e.authors)}. <i>${esc(e.title)}</i>. ${esc(e.status)}</p>
+            <p>${reuse(e)} Cite the paper when reusing them.</p>
             <p class="small muted">Companion site built ${esc(e.built)}. Every result it states is checked at build time against the analysis outputs that produce the paper's numbers.</p></section>
         </article>
       </div>`;
@@ -492,7 +498,7 @@
     const e = S.evidence;
     $("#brand").textContent = e.short_title;
     $("#footer").innerHTML = `<div class="foot-cols">
-      <div><p class="foot-title">${esc(e.short_title)}</p><p>${esc(e.status)} ${esc(e.authors)}.</p></div>
+      <div><p class="foot-title">${esc(e.short_title)}</p><p>${esc(e.status)} ${esc(e.authors)}.</p><p>${reuse(e)}</p></div>
       <div><p>Data: Midlife in the United States (MIDUS). Aggregates only; no individual-level data are published here. <a href="#/about" data-jump-privacy>Data and privacy</a>.</p>
       <p class="muted">Built ${esc(e.built)}.</p></div></div>`;
     $("#menuButton").addEventListener("click", () => {
